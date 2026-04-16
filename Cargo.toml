@@ -1,0 +1,24 @@
+[package]
+name = "sf"
+version = "0.1.0"
+edition = "2024"
+description = "Detect AI writing patterns (slop) in your codebase"
+license = "Apache-2.0"
+authors = ["Adam Azzam <adam@prefect.io>"]
+readme = "README.md"
+repository = "https://github.com/prefectlabs/sf"
+keywords = ["linter", "writing", "llm", "slop", "ci"]
+categories = ["command-line-utilities", "text-processing"]
+
+[dependencies]
+clap = { version = "4", features = ["derive"] }
+ignore = "0.4"
+memchr = "2"
+regex-lite = "0.1"
+serde = { version = "1", features = ["derive"] }
+termcolor = "1"
+toml = "0.8"
+
+[[bin]]
+name = "sf"
+path = "src/main.rs"

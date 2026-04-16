@@ -1,0 +1,5 @@
+{
+  "sentence-length-cv": "writing has a metronomic rhythm \u2014 every sentence hits the same beat. vary structure: combine related ideas, break apart compound ones, use subordinate clauses or fragments where natural",
+  "sentence-length-kurtosis": "Your sentences are all similar length. Rewrite whole paragraphs: merge related short sentences into longer, layered ones; also insert a few very short or very long sentences for contrast.",
+  "word-freq-dispersion": "key words are sprinkled too uniformly \u2014 concentrate terminology where it's relevant instead of distributing it evenly across the text"
+}
