@@ -75,8 +75,10 @@ pub const DOUBLE_HYPHEN: Pattern = Pattern {
 fn detect_contrastive(contents: &str) -> Vec<Match> {
     // Lazy-init the regex once per call is fine; for hot paths we'd use LazyLock
     // but pattern checks are I/O-bound anyway.
+    // Separator class accepts comma, semicolon, em-dash (U+2014), or ASCII " -- "
+    // since LLMs frequently substitute the double-hyphen for a real em-dash.
     let re = regex_lite::Regex::new(
-        r"(?i)\b(it'?s not|it isn'?t|this isn'?t|this is not|that'?s not|that isn'?t)\s+(just|merely|simply\s+)?.{1,50}[,;\u{2014}]\s*(it'?s|it is|this is|that'?s)\b"
+        r"(?i)\b(it'?s not|it isn'?t|this isn'?t|this is not|that'?s not|that isn'?t)\s+(just|merely|simply\s+)?.{1,50}(?:[,;\u{2014}]|--)\s*(it'?s|it is|this is|that'?s)\b"
     ).unwrap();
 
     let mut matches = Vec::new();
