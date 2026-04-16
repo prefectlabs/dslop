@@ -3,9 +3,9 @@
 Detect AI writing patterns (slop) in your codebase.
 
 `dslop` is a fast CLI linter for prose. It flags telltale LLM writing patterns
-(em-dashes, double-hyphen dashes, "it's not X, it's Y" constructions) and
-statistical tells (uniform sentence rhythm, flat word-frequency distributions)
-that human writing rarely produces.
+(em-dashes, double-hyphen dashes, "it's not X, it's Y" and "X, not Y"
+constructions) and statistical tells (uniform sentence rhythm, flat
+word-frequency distributions) that human writing rarely produces.
 
 ## Install
 
@@ -49,6 +49,7 @@ Create `dslop.toml` at your repo root:
 em-dash = true
 double-hyphen = true
 contrastive = true
+contrastive-comma = true
 
 [metrics]
 sentence-length-cv = 0.3
