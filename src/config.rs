@@ -13,6 +13,7 @@ pub struct PatternConfig {
     pub em_dash: bool,
     pub double_hyphen: bool,
     pub contrastive: bool,
+    pub contrastive_comma: bool,
 }
 
 pub struct MetricsConfig {
@@ -48,6 +49,8 @@ struct RawPatterns {
     #[serde(rename = "double-hyphen")]
     double_hyphen: Option<bool>,
     contrastive: Option<bool>,
+    #[serde(rename = "contrastive-comma")]
+    contrastive_comma: Option<bool>,
 }
 
 #[derive(Deserialize, Default)]
@@ -85,6 +88,7 @@ impl Default for Config {
                 em_dash: true,
                 double_hyphen: true,
                 contrastive: true,
+                contrastive_comma: true,
             },
             metrics: MetricsConfig {
                 sentence_length_cv: Some(0.3),
@@ -143,6 +147,9 @@ impl Config {
             }
             if let Some(v) = p.contrastive {
                 self.patterns.contrastive = v;
+            }
+            if let Some(v) = p.contrastive_comma {
+                self.patterns.contrastive_comma = v;
             }
         }
         if let Some(m) = raw.metrics {

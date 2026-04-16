@@ -104,6 +104,48 @@ pub const CONTRASTIVE: Pattern = Pattern {
     detect: detect_contrastive,
 };
 
+// ---- Contrastive (comma form) ----
+//
+// Sibling to CONTRASTIVE. Catches the standalone "X, not Y" aphorism, where
+// X and Y are short noun phrases and the construction terminates a clause:
+//
+//   "Design your tools as verbs, not nouns."
+//   "They are complements, not substitutes."
+//   "We built a schema, not a product."
+//
+// Same rhetorical move as "it's not X, it's Y" but structurally distinct, so
+// the existing pronoun-led regex won't fire on it.
+//
+// False-positive guardrail: the construction must terminate the clause
+// (period, question/exclamation mark, semicolon, em-dash, " -- ", or
+// end-of-line). This excludes legitimate mid-sentence uses like
+// "I bought milk, not cream, from the store."
+
+fn detect_contrastive_comma(contents: &str) -> Vec<Match> {
+    // \b WORD , (space) not (space) [optional article] WORD \b (clause terminator)
+    let re = regex_lite::Regex::new(
+        r"(?i)\b\w+,\s+not\s+(?:a\s+|an\s+|the\s+)?\w+\b\s*(?:[.!?;]|\u{2014}|--|$)"
+    ).unwrap();
+
+    let mut matches = Vec::new();
+    for (line_idx, line) in contents.lines().enumerate() {
+        for m in re.find_iter(line) {
+            let column = line[..m.start()].chars().count() + 1;
+            matches.push(Match {
+                line_number: line_idx + 1,
+                column,
+            });
+        }
+    }
+    matches
+}
+
+pub const CONTRASTIVE_COMMA: Pattern = Pattern {
+    name: "contrastive-comma",
+    fix: "rephrase to avoid the \"X, not Y\" aphorism; state what X *is* without the negated foil",
+    detect: detect_contrastive_comma,
+};
+
 use crate::config::Config;
 
 pub fn active_patterns(config: &Config) -> Vec<&'static Pattern> {
@@ -116,6 +158,9 @@ pub fn active_patterns(config: &Config) -> Vec<&'static Pattern> {
     }
     if config.patterns.contrastive {
         out.push(&CONTRASTIVE);
+    }
+    if config.patterns.contrastive_comma {
+        out.push(&CONTRASTIVE_COMMA);
     }
     out
 }

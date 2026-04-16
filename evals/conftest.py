@@ -112,6 +112,12 @@ SLOPPY_TEXTS: dict[str, str] = {
         "This isn't just fast, it's blazing. "
         "It's not about code, it's about impact."
     ),
+    "contrastive-comma": (
+        "Design your tools as verbs, not nouns. "
+        "They are complements, not substitutes. "
+        "We built a schema, not a product. "
+        "Ship value, not features."
+    ),
     "uniform-rhythm": (
         "The architecture handles scale. The design handles complexity. "
         "The system handles load. Every component works in harmony. "
