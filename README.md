@@ -1,26 +1,26 @@
-# sf
+# dslop
 
 Detect AI writing patterns (slop) in your codebase.
 
-`sf` is a fast CLI linter for prose. It flags telltale LLM writing patterns
-(em-dashes, "it's not X, it's Y" constructions) and statistical tells
-(uniform sentence rhythm, flat word-frequency distributions) that human
-writing rarely produces.
+`dslop` is a fast CLI linter for prose. It flags telltale LLM writing patterns
+(em-dashes, double-hyphen dashes, "it's not X, it's Y" constructions) and
+statistical tells (uniform sentence rhythm, flat word-frequency distributions)
+that human writing rarely produces.
 
 ## Install
 
 ```sh
-pip install sf
+pip install dslop
 # or
-uvx sf .
+uvx dslop .
 ```
 
 ## Use
 
 ```sh
-sf                   # check current directory
-sf README.md docs/   # check specific paths
-sf --config sf.toml  # use a specific config
+dslop                       # check current directory
+dslop README.md docs/       # check specific paths
+dslop --config dslop.toml   # use a specific config
 ```
 
 Exits non-zero on violations, so it drops into CI or pre-commit unchanged.
@@ -29,15 +29,15 @@ Exits non-zero on violations, so it drops into CI or pre-commit unchanged.
 
 ```yaml
 repos:
-  - repo: https://github.com/prefectlabs/sf
+  - repo: https://github.com/prefectlabs/dslop
     rev: v0.1.0
     hooks:
-      - id: sf
+      - id: dslop
 ```
 
 ## Configure
 
-Create `sf.toml` at your repo root:
+Create `dslop.toml` at your repo root:
 
 ```toml
 [patterns]

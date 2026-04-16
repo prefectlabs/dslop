@@ -1,4 +1,4 @@
-"""Use GEPA optimize_anything to evolve sf metric fix guidance strings.
+"""Use GEPA optimize_anything to evolve dslop metric fix guidance strings.
 
 Only optimizes the three metric families (sentence-length-cv,
 sentence-length-kurtosis, word-freq-dispersion) since pattern violations
@@ -25,7 +25,7 @@ import gepa.optimize_anything as oa
 from gepa.optimize_anything import GEPAConfig, EngineConfig, optimize_anything
 from pydantic_ai import Agent
 
-from conftest import SLOPPY_TEXTS, run_sf, SfResult
+from conftest import SLOPPY_TEXTS, run_dslop, DslopResult
 
 EVAL_MODELS = [
     "openai:gpt-4o",
@@ -68,18 +68,18 @@ REWRITE_SYSTEM_PROMPT = (
 
 # Pre-compute which eval cases actually have metric violations,
 # so we don't waste GEPA budget on pure pattern-only cases.
-def _build_metric_cases() -> dict[str, tuple[str, SfResult, list[str]]]:
+def _build_metric_cases() -> dict[str, tuple[str, DslopResult, list[str]]]:
     cases = {}
     for name, text in SLOPPY_TEXTS.items():
-        result = run_sf(text)
+        result = run_dslop(text)
         metric_violations = [f for f in result.fixes if f in METRIC_FAMILIES]
         if metric_violations:
             cases[name] = (text, result, metric_violations)
     return cases
 
 
-def build_sf_output(original_result: SfResult, candidate: dict) -> str:
-    """Reconstruct sf output with candidate metric guidance + fixed pattern guidance."""
+def build_dslop_output(original_result: DslopResult, candidate: dict) -> str:
+    """Reconstruct dslop output with candidate metric guidance + fixed pattern guidance."""
     lines = []
 
     for line in original_result.raw.splitlines():
@@ -109,7 +109,7 @@ def evaluate(candidate: dict) -> tuple[float, dict]:
     traces: list[str] = []
 
     for text_name, (text, original, metric_families) in cases.items():
-        patched_output = build_sf_output(original, candidate)
+        patched_output = build_dslop_output(original, candidate)
 
         for model in EVAL_MODELS:
             total += 1
@@ -117,14 +117,14 @@ def evaluate(candidate: dict) -> tuple[float, dict]:
 
             prompt = (
                 f"Here is the original text:\n\n{text}\n\n"
-                f"Here is the error report from sf:\n\n{patched_output}\n\n"
+                f"Here is the error report from dslop:\n\n{patched_output}\n\n"
                 f"Rewrite the text to fix all violations."
             )
 
             try:
                 result = asyncio.run(agent.run(prompt, model=model))
                 rewritten = result.output
-                recheck = run_sf(rewritten)
+                recheck = run_dslop(rewritten)
 
                 # Only check if metric violations are fixed (ignore pattern violations)
                 remaining = [f for f in metric_families if f in recheck.fixes]

@@ -1,12 +1,12 @@
 [package]
-name = "sf"
+name = "dslop"
 version = "0.1.0"
 edition = "2024"
 description = "Detect AI writing patterns (slop) in your codebase"
 license = "Apache-2.0"
 authors = ["Adam Azzam <adam@prefect.io>"]
 readme = "README.md"
-repository = "https://github.com/prefectlabs/sf"
+repository = "https://github.com/prefectlabs/dslop"
 keywords = ["linter", "writing", "llm", "slop", "ci"]
 categories = ["command-line-utilities", "text-processing"]
 
@@ -20,5 +20,5 @@ termcolor = "1"
 toml = "0.8"
 
 [[bin]]
-name = "sf"
+name = "dslop"
 path = "src/main.rs"

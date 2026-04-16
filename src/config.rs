@@ -107,7 +107,7 @@ impl Default for Config {
 }
 
 impl Config {
-    /// Search upward from `start` for `sf.toml`, parse and merge onto defaults.
+    /// Search upward from `start` for `dslop.toml`, parse and merge onto defaults.
     pub fn load(start: &Path) -> Config {
         let mut config = Config::default();
 
@@ -187,7 +187,7 @@ fn find_config(start: &Path) -> Option<PathBuf> {
         start.to_path_buf()
     };
     loop {
-        let candidate = dir.join("sf.toml");
+        let candidate = dir.join("dslop.toml");
         if candidate.is_file() {
             return Some(candidate);
         }

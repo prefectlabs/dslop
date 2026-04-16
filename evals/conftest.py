@@ -16,12 +16,12 @@ MODELS = [
     "google-gla:gemini-2.5-flash",
 ]
 
-SF_BIN = Path(__file__).resolve().parent.parent / "target" / "release" / "sf"
+DSLOP_BIN = Path(__file__).resolve().parent.parent / "target" / "release" / "dslop"
 
 
 @dataclass
-class SfResult:
-    """Parsed output from a sf run."""
+class DslopResult:
+    """Parsed output from a dslop run."""
 
     raw: str
     exit_code: int
@@ -29,15 +29,15 @@ class SfResult:
     fixes: dict[str, str]
 
 
-def run_sf(text: str) -> SfResult:
-    """Write text to a temp .md file, run sf, parse output."""
+def run_dslop(text: str) -> DslopResult:
+    """Write text to a temp .md file, run dslop, parse output."""
     with tempfile.NamedTemporaryFile(suffix=".md", mode="w", delete=False) as f:
         f.write(text)
         f.flush()
         path = f.name
 
     result = subprocess.run(
-        [str(SF_BIN), path],
+        [str(DSLOP_BIN), path],
         capture_output=True,
         text=True,
         env={**os.environ, "NO_COLOR": "1"},  # inherit env, strip ANSI
@@ -56,12 +56,12 @@ def run_sf(text: str) -> SfResult:
         if in_fix_block and ": " in line:
             name, guidance = line.split(": ", 1)
             fixes[name.strip()] = guidance.strip()
-        elif not in_fix_block and line and not line.startswith("sf:"):
+        elif not in_fix_block and line and not line.startswith("dslop:"):
             violations.append(line)
 
     Path(path).unlink(missing_ok=True)
 
-    return SfResult(
+    return DslopResult(
         raw=raw,
         exit_code=result.returncode,
         violations=violations,
@@ -71,11 +71,11 @@ def run_sf(text: str) -> SfResult:
 
 @dataclass
 class EvalCase:
-    """A sloppy text + the sf error output an LLM must fix."""
+    """A sloppy text + the dslop error output an LLM must fix."""
 
     name: str
     text: str
-    sf_output: SfResult
+    dslop_output: DslopResult
     violation_families: list[str]
 
 
@@ -131,12 +131,12 @@ SLOPPY_TEXTS: dict[str, str] = {
 
 
 def _build_case(name: str, text: str) -> EvalCase:
-    result = run_sf(text)
+    result = run_dslop(text)
     families = list(result.fixes.keys())
     return EvalCase(
         name=name,
         text=text,
-        sf_output=result,
+        dslop_output=result,
         violation_families=families,
     )
 

@@ -10,12 +10,12 @@ use std::process;
 use clap::Parser;
 
 #[derive(Parser)]
-#[command(name = "sf", about = "Detect AI writing patterns (slop) in your codebase")]
+#[command(name = "dslop", about = "Detect AI writing patterns (slop) in your codebase")]
 struct Cli {
     /// Files or directories to check (defaults to current directory)
     paths: Vec<String>,
 
-    /// Path to config file (default: search upward for sf.toml)
+    /// Path to config file (default: search upward for dslop.toml)
     #[arg(short, long)]
     config: Option<String>,
 }

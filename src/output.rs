@@ -20,7 +20,7 @@ pub fn print_results(results: &[FileResult]) {
         .ok();
     writeln!(
         &mut stdout,
-        "sf: {total} violation{s} in {f} file{fs}",
+        "dslop: {total} violation{s} in {f} file{fs}",
         s = if total == 1 { "" } else { "s" },
         f = results.len(),
         fs = if results.len() == 1 { "" } else { "s" },

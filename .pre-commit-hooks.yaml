@@ -1,6 +1,6 @@
-- id: sf
-  name: sf
+- id: dslop
+  name: dslop
   description: Detect AI writing patterns (slop) in your codebase
-  entry: sf
+  entry: dslop
   language: rust
   types: [text]

@@ -143,6 +143,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d0a5c400df2834b80a4c3327b3aad3a4c4cd4de0629063962b03235697506a28"
 
 [[package]]
+name = "dslop"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "ignore",
+ "memchr",
+ "regex-lite",
+ "serde",
+ "termcolor",
+ "toml",
+]
+
+[[package]]
 name = "equivalent"
 version = "1.0.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -310,19 +323,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bf41e0cfaf7226dca15e8197172c295a782857fcb97fad1808a166870dee75a3"
 dependencies = [
  "serde",
-]
-
-[[package]]
-name = "sf"
-version = "0.1.0"
-dependencies = [
- "clap",
- "ignore",
- "memchr",
- "regex-lite",
- "serde",
- "termcolor",
- "toml",
 ]
 
 [[package]]

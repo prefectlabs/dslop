@@ -1,7 +1,7 @@
-"""Eval: can an LLM fix sf violations given the error output?
+"""Eval: can an LLM fix dslop violations given the error output?
 
 Matrix: MODELS × SLOPPY_TEXTS
-Pass criteria: rewritten text produces zero sf violations for the families
+Pass criteria: rewritten text produces zero dslop violations for the families
 that were originally flagged.
 """
 
@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from pydantic_ai import Agent
 
-from conftest import EvalCase, run_sf
+from conftest import EvalCase, run_dslop
 
 
 async def test_rewrite_fixes_violations(
@@ -21,17 +21,17 @@ async def test_rewrite_fixes_violations(
 
 {eval_case.text}
 
-Here is the error report from sf:
+Here is the error report from dslop:
 
-{eval_case.sf_output.raw}
+{eval_case.dslop_output.raw}
 
 Rewrite the text to fix all violations."""
 
     result = await rewrite_agent.run(prompt, model=model)
     rewritten = result.output
 
-    # Run sf on the rewritten text
-    recheck = run_sf(rewritten)
+    # Run dslop on the rewritten text
+    recheck = run_dslop(rewritten)
 
     # Check that the originally-flagged violation families are gone
     remaining = [

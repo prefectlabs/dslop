@@ -1,7 +1,7 @@
 [project]
-name = "sf-evals"
+name = "dslop-evals"
 version = "0.1.0"
-description = "Evals for sf error code effectiveness across LLMs"
+description = "Evals for dslop error code effectiveness across LLMs"
 requires-python = ">=3.12"
 dependencies = [
     "pydantic-ai",
