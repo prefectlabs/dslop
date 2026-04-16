@@ -21,6 +21,11 @@ uvx dslop .
 dslop                       # check current directory
 dslop README.md docs/       # check specific paths
 dslop --config dslop.toml   # use a specific config
+
+# Read from stdin:
+echo "It's not a tool — it's a platform." | dslop -
+pbpaste | dslop                                         # clipboard
+git show HEAD:README.md | dslop                         # a past revision
 ```
 
 Exits non-zero on violations, so it drops into CI or pre-commit unchanged.

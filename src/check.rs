@@ -26,10 +26,22 @@ pub struct MetricViolation {
 
 pub fn check_file(path: &Path, patterns: &[&Pattern], config: &Config, run_metrics: bool) -> Option<FileResult> {
     let contents = fs::read_to_string(path).ok()?;
+    check_contents(&contents, &path.display().to_string(), patterns, config, run_metrics)
+}
+
+/// Run pattern and metric checks against an in-memory string.
+/// Used for stdin and anywhere else we don't want to touch the filesystem.
+pub fn check_contents(
+    contents: &str,
+    path_label: &str,
+    patterns: &[&Pattern],
+    config: &Config,
+    run_metrics: bool,
+) -> Option<FileResult> {
     let mut findings = Vec::new();
 
     for pattern in patterns {
-        let matches = (pattern.detect)(&contents);
+        let matches = (pattern.detect)(contents);
         if !matches.is_empty() {
             findings.push(Finding {
                 pattern_name: pattern.name,
@@ -43,7 +55,7 @@ pub fn check_file(path: &Path, patterns: &[&Pattern], config: &Config, run_metri
 
     if run_metrics {
         if let Some(thresh) = config.metrics.sentence_length_cv {
-            if let Some(score) = metrics::sentence_length_cv(&contents) {
+            if let Some(score) = metrics::sentence_length_cv(contents) {
                 if score < thresh {
                     metric_violations.push(MetricViolation {
                         metric_name: "sentence-length-cv",
@@ -56,7 +68,7 @@ pub fn check_file(path: &Path, patterns: &[&Pattern], config: &Config, run_metri
         }
 
         if let Some(thresh) = config.metrics.sentence_length_kurtosis {
-            if let Some(score) = metrics::sentence_length_kurtosis(&contents) {
+            if let Some(score) = metrics::sentence_length_kurtosis(contents) {
                 if score < thresh {
                     metric_violations.push(MetricViolation {
                         metric_name: "sentence-length-kurtosis",
@@ -71,7 +83,7 @@ pub fn check_file(path: &Path, patterns: &[&Pattern], config: &Config, run_metri
         if let Some(thresh) = config.metrics.word_freq_dispersion.threshold {
             let chunk_size = config.metrics.word_freq_dispersion.chunk_size;
             let top_n = config.metrics.word_freq_dispersion.top_n;
-            if let Some(score) = metrics::word_freq_dispersion(&contents, chunk_size, top_n) {
+            if let Some(score) = metrics::word_freq_dispersion(contents, chunk_size, top_n) {
                 if score < thresh {
                     metric_violations.push(MetricViolation {
                         metric_name: "word-freq-dispersion",
@@ -88,7 +100,7 @@ pub fn check_file(path: &Path, patterns: &[&Pattern], config: &Config, run_metri
 
     if has_violations {
         Some(FileResult {
-            path: path.display().to_string(),
+            path: path_label.to_string(),
             findings,
             metric_violations,
         })
