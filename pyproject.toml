@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "dslop"
-version = "0.1.2"
+version = "0.2.0"
 description = "Detect AI writing patterns (slop) in your codebase"
 readme = "README.md"
 requires-python = ">=3.8"

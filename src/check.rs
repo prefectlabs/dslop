@@ -25,8 +25,54 @@ pub struct MetricViolation {
 }
 
 pub fn check_file(path: &Path, patterns: &[&Pattern], config: &Config, run_metrics: bool) -> Option<FileResult> {
-    let contents = fs::read_to_string(path).ok()?;
+    let mut contents = fs::read_to_string(path).ok()?;
+    if has_frontmatter_extension(path) {
+        strip_frontmatter_in_place(&mut contents);
+    }
     check_contents(&contents, &path.display().to_string(), patterns, config, run_metrics)
+}
+
+fn has_frontmatter_extension(path: &Path) -> bool {
+    path.extension()
+        .and_then(|e| e.to_str())
+        .is_some_and(|ext| matches!(ext, "md" | "mdx" | "markdown"))
+}
+
+/// Blank out a leading `---\n...\n---\n` YAML frontmatter block, preserving
+/// newlines so downstream line numbers stay accurate.
+fn strip_frontmatter_in_place(contents: &mut String) {
+    if !contents.starts_with("---\n") && !contents.starts_with("---\r\n") {
+        return;
+    }
+    let after_open = contents.find('\n').map(|i| i + 1).unwrap_or(0);
+    let Some(rel_close) = contents[after_open..].find("\n---") else {
+        return;
+    };
+    let close_start = after_open + rel_close + 1; // start of the closing `---`
+    let close_end = close_start + 3;
+    // Require the closing fence to be followed by end-of-file or a newline.
+    let after_close = contents.as_bytes().get(close_end).copied();
+    if !matches!(after_close, None | Some(b'\n') | Some(b'\r')) {
+        return;
+    }
+    let end = match after_close {
+        Some(b'\r') if contents.as_bytes().get(close_end + 1) == Some(&b'\n') => close_end + 2,
+        Some(b'\n') => close_end + 1,
+        Some(b'\r') => close_end + 1,
+        _ => close_end,
+    };
+    // Replace the frontmatter region with spaces and newlines so byte/line
+    // positions downstream stay aligned with the original file.
+    let mut blanked = String::with_capacity(contents.len());
+    for ch in contents[..end].chars() {
+        if ch == '\n' || ch == '\r' {
+            blanked.push(ch);
+        } else {
+            blanked.push(' ');
+        }
+    }
+    blanked.push_str(&contents[end..]);
+    *contents = blanked;
 }
 
 /// Run pattern and metric checks against an in-memory string.

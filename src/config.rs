@@ -13,6 +13,18 @@ pub struct PatternConfig {
     pub em_dash: bool,
     pub double_hyphen: bool,
     pub contrastive: bool,
+    pub demonstrative_is: bool,
+    pub filler_adverbs: bool,
+    pub weasel_connectives: bool,
+    pub banned_flourish: bool,
+    pub negation_pair: bool,
+    pub symmetric_negation: bool,
+    pub which_chain: bool,
+    pub but_opener: bool,
+    pub aphorism: bool,
+    pub summary_capstone: bool,
+    pub declarative_callback: bool,
+    pub three_beat: bool,
 }
 
 pub struct MetricsConfig {
@@ -48,6 +60,29 @@ struct RawPatterns {
     #[serde(rename = "double-hyphen")]
     double_hyphen: Option<bool>,
     contrastive: Option<bool>,
+    #[serde(rename = "demonstrative-is")]
+    demonstrative_is: Option<bool>,
+    #[serde(rename = "filler-adverbs")]
+    filler_adverbs: Option<bool>,
+    #[serde(rename = "weasel-connectives")]
+    weasel_connectives: Option<bool>,
+    #[serde(rename = "banned-flourish")]
+    banned_flourish: Option<bool>,
+    #[serde(rename = "negation-pair")]
+    negation_pair: Option<bool>,
+    #[serde(rename = "symmetric-negation")]
+    symmetric_negation: Option<bool>,
+    #[serde(rename = "which-chain")]
+    which_chain: Option<bool>,
+    #[serde(rename = "but-opener")]
+    but_opener: Option<bool>,
+    aphorism: Option<bool>,
+    #[serde(rename = "summary-capstone")]
+    summary_capstone: Option<bool>,
+    #[serde(rename = "declarative-callback")]
+    declarative_callback: Option<bool>,
+    #[serde(rename = "three-beat")]
+    three_beat: Option<bool>,
 }
 
 #[derive(Deserialize, Default)]
@@ -85,6 +120,18 @@ impl Default for Config {
                 em_dash: true,
                 double_hyphen: true,
                 contrastive: true,
+                demonstrative_is: true,
+                filler_adverbs: true,
+                weasel_connectives: true,
+                banned_flourish: true,
+                negation_pair: true,
+                symmetric_negation: true,
+                which_chain: true,
+                but_opener: true,
+                aphorism: true,
+                summary_capstone: true,
+                declarative_callback: true,
+                three_beat: true,
             },
             metrics: MetricsConfig {
                 sentence_length_cv: Some(0.3),
@@ -143,6 +190,42 @@ impl Config {
             }
             if let Some(v) = p.contrastive {
                 self.patterns.contrastive = v;
+            }
+            if let Some(v) = p.demonstrative_is {
+                self.patterns.demonstrative_is = v;
+            }
+            if let Some(v) = p.filler_adverbs {
+                self.patterns.filler_adverbs = v;
+            }
+            if let Some(v) = p.weasel_connectives {
+                self.patterns.weasel_connectives = v;
+            }
+            if let Some(v) = p.banned_flourish {
+                self.patterns.banned_flourish = v;
+            }
+            if let Some(v) = p.negation_pair {
+                self.patterns.negation_pair = v;
+            }
+            if let Some(v) = p.symmetric_negation {
+                self.patterns.symmetric_negation = v;
+            }
+            if let Some(v) = p.which_chain {
+                self.patterns.which_chain = v;
+            }
+            if let Some(v) = p.but_opener {
+                self.patterns.but_opener = v;
+            }
+            if let Some(v) = p.aphorism {
+                self.patterns.aphorism = v;
+            }
+            if let Some(v) = p.summary_capstone {
+                self.patterns.summary_capstone = v;
+            }
+            if let Some(v) = p.declarative_callback {
+                self.patterns.declarative_callback = v;
+            }
+            if let Some(v) = p.three_beat {
+                self.patterns.three_beat = v;
             }
         }
         if let Some(m) = raw.metrics {

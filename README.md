@@ -49,6 +49,18 @@ Create `dslop.toml` at your repo root:
 em-dash = true
 double-hyphen = true
 contrastive = true
+demonstrative-is = true
+filler-adverbs = true          # quietly, actually, really, simply, essentially, ...
+weasel-connectives = true      # which means, in turn, the reality is, ...
+banned-flourish = true         # worth noting, to be clear, at the end of the day, ...
+negation-pair = true           # "not X, not Y"
+symmetric-negation = true      # "fine if X, wrong if Y" / "not X but Y"
+which-chain = true             # 3+ "which" in a single sentence
+but-opener = true              # short sentences starting with "But"
+aphorism = true                # "X does not Y." one-liners
+summary-capstone = true        # paragraph-final "That is the X."
+declarative-callback = true    # paragraph-final fragment callbacks
+three-beat = true              # 3 consecutive short sentences in a paragraph
 
 [metrics]
 sentence-length-cv = 0.3
