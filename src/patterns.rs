@@ -289,7 +289,7 @@ pub const BANNED_FLOURISH: Pattern = Pattern {
 // ---- Banned negation ("not" / "n't") ----
 
 fn detect_banned_negation(contents: &str) -> Vec<Match> {
-    let re = regex_lite::Regex::new(r"(?i)(\bnot\b|\b[[:alpha:]]+n['\u{2019}]?t\b)").unwrap();
+    let re = regex_lite::Regex::new(r"(?i)(\bnot\b|\b[[:alpha:]]+n['\u{2019}]t\b)").unwrap();
     let mut matches = Vec::new();
     for (line_idx, line) in contents.lines().enumerate() {
         for m in re.find_iter(line) {
