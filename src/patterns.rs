@@ -286,6 +286,29 @@ pub const BANNED_FLOURISH: Pattern = Pattern {
     detect: detect_banned_flourish,
 };
 
+// ---- Banned negation ("not" / "n't") ----
+
+fn detect_banned_negation(contents: &str) -> Vec<Match> {
+    let re = regex_lite::Regex::new(r"(?i)(\bnot\b|\b[[:alpha:]]+n['\u{2019}]?t\b)").unwrap();
+    let mut matches = Vec::new();
+    for (line_idx, line) in contents.lines().enumerate() {
+        for m in re.find_iter(line) {
+            let column = line[..m.start()].chars().count() + 1;
+            matches.push(Match {
+                line_number: line_idx + 1,
+                column,
+            });
+        }
+    }
+    matches
+}
+
+pub const BANNED_NEGATION: Pattern = Pattern {
+    name: "banned-negation",
+    fix: "rewrite without \"not\" or \"n't\"; state the positive claim directly",
+    detect: detect_banned_negation,
+};
+
 // ---- Negation pair ("not X, not Y" / "not X. not Y.") ----
 
 fn detect_negation_pair(contents: &str) -> Vec<Match> {
@@ -547,6 +570,9 @@ pub fn active_patterns(config: &Config) -> Vec<&'static Pattern> {
     }
     if config.patterns.banned_flourish {
         out.push(&BANNED_FLOURISH);
+    }
+    if config.patterns.banned_negation {
+        out.push(&BANNED_NEGATION);
     }
     if config.patterns.negation_pair {
         out.push(&NEGATION_PAIR);

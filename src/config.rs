@@ -17,6 +17,7 @@ pub struct PatternConfig {
     pub filler_adverbs: bool,
     pub weasel_connectives: bool,
     pub banned_flourish: bool,
+    pub banned_negation: bool,
     pub negation_pair: bool,
     pub symmetric_negation: bool,
     pub which_chain: bool,
@@ -68,6 +69,8 @@ struct RawPatterns {
     weasel_connectives: Option<bool>,
     #[serde(rename = "banned-flourish")]
     banned_flourish: Option<bool>,
+    #[serde(rename = "banned-negation")]
+    banned_negation: Option<bool>,
     #[serde(rename = "negation-pair")]
     negation_pair: Option<bool>,
     #[serde(rename = "symmetric-negation")]
@@ -124,6 +127,7 @@ impl Default for Config {
                 filler_adverbs: true,
                 weasel_connectives: true,
                 banned_flourish: true,
+                banned_negation: true,
                 negation_pair: true,
                 symmetric_negation: true,
                 which_chain: true,
@@ -202,6 +206,9 @@ impl Config {
             }
             if let Some(v) = p.banned_flourish {
                 self.patterns.banned_flourish = v;
+            }
+            if let Some(v) = p.banned_negation {
+                self.patterns.banned_negation = v;
             }
             if let Some(v) = p.negation_pair {
                 self.patterns.negation_pair = v;
