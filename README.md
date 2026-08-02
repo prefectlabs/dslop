@@ -49,7 +49,6 @@ Create `dslop.toml` at your repo root:
 em-dash = true
 en-dash = true
 double-hyphen = true
-middle-dot = true
 contrastive = true
 demonstrative-is = true
 filler-adverbs = true          # quietly, actually, really, simply, essentially, ...

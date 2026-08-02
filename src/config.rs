@@ -13,7 +13,6 @@ pub struct PatternConfig {
     pub em_dash: bool,
     pub en_dash: bool,
     pub double_hyphen: bool,
-    pub middle_dot: bool,
     pub contrastive: bool,
     pub demonstrative_is: bool,
     pub filler_adverbs: bool,
@@ -68,8 +67,6 @@ struct RawPatterns {
     en_dash: Option<bool>,
     #[serde(rename = "double-hyphen")]
     double_hyphen: Option<bool>,
-    #[serde(rename = "middle-dot")]
-    middle_dot: Option<bool>,
     contrastive: Option<bool>,
     #[serde(rename = "demonstrative-is")]
     demonstrative_is: Option<bool>,
@@ -141,7 +138,6 @@ impl Default for Config {
                 em_dash: true,
                 en_dash: true,
                 double_hyphen: true,
-                middle_dot: true,
                 contrastive: true,
                 demonstrative_is: true,
                 filler_adverbs: true,
@@ -218,9 +214,6 @@ impl Config {
             }
             if let Some(v) = p.double_hyphen {
                 self.patterns.double_hyphen = v;
-            }
-            if let Some(v) = p.middle_dot {
-                self.patterns.middle_dot = v;
             }
             if let Some(v) = p.contrastive {
                 self.patterns.contrastive = v;

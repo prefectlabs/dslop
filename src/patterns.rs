@@ -184,28 +184,6 @@ pub const DOUBLE_HYPHEN: Pattern = Pattern {
     detect: detect_double_hyphen,
 };
 
-// ---- Middle dot ----
-
-fn detect_middle_dot(contents: &str) -> Vec<Match> {
-    let mut matches = Vec::new();
-    for (line_idx, line) in contents.lines().enumerate() {
-        for (byte_offset, _) in line.match_indices('\u{00b7}') {
-            let column = line[..byte_offset].chars().count() + 1;
-            matches.push(Match {
-                line_number: line_idx + 1,
-                column,
-            });
-        }
-    }
-    matches
-}
-
-pub const MIDDLE_DOT: Pattern = Pattern {
-    name: "middle-dot",
-    fix: "replace the middle dot (\u{00b7}) with a comma, a word, or separate lines",
-    detect: detect_middle_dot,
-};
-
 // ---- Contrastive parallelism ----
 
 fn detect_contrastive(contents: &str) -> Vec<Match> {
@@ -714,9 +692,6 @@ pub fn active_patterns(config: &Config) -> Vec<&'static Pattern> {
     if config.patterns.double_hyphen {
         out.push(&DOUBLE_HYPHEN);
     }
-    if config.patterns.middle_dot {
-        out.push(&MIDDLE_DOT);
-    }
     if config.patterns.contrastive {
         out.push(&CONTRASTIVE);
     }
@@ -782,7 +757,6 @@ mod tests {
     fn detects_plain_punctuation_substitutes() {
         assert_eq!(detect_en_dash("pages 10\u{2013}20").len(), 1);
         assert_eq!(detect_en_dash("pages 10-20").len(), 0);
-        assert_eq!(detect_middle_dot("Lecture 1 \u{00b7} Setup").len(), 1);
     }
 
     #[test]
