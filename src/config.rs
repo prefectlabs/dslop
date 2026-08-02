@@ -11,12 +11,18 @@ pub struct Config {
 
 pub struct PatternConfig {
     pub em_dash: bool,
+    pub en_dash: bool,
     pub double_hyphen: bool,
+    pub middle_dot: bool,
     pub contrastive: bool,
     pub demonstrative_is: bool,
     pub filler_adverbs: bool,
     pub weasel_connectives: bool,
     pub banned_flourish: bool,
+    pub ai_vocabulary: bool,
+    pub rhetorical_question_chain: bool,
+    pub vague_attribution: bool,
+    pub count_opening: bool,
     pub banned_negation: bool,
     pub negation_pair: bool,
     pub symmetric_negation: bool,
@@ -58,8 +64,12 @@ struct RawConfig {
 struct RawPatterns {
     #[serde(rename = "em-dash")]
     em_dash: Option<bool>,
+    #[serde(rename = "en-dash")]
+    en_dash: Option<bool>,
     #[serde(rename = "double-hyphen")]
     double_hyphen: Option<bool>,
+    #[serde(rename = "middle-dot")]
+    middle_dot: Option<bool>,
     contrastive: Option<bool>,
     #[serde(rename = "demonstrative-is")]
     demonstrative_is: Option<bool>,
@@ -69,6 +79,14 @@ struct RawPatterns {
     weasel_connectives: Option<bool>,
     #[serde(rename = "banned-flourish")]
     banned_flourish: Option<bool>,
+    #[serde(rename = "ai-vocabulary")]
+    ai_vocabulary: Option<bool>,
+    #[serde(rename = "rhetorical-question-chain")]
+    rhetorical_question_chain: Option<bool>,
+    #[serde(rename = "vague-attribution")]
+    vague_attribution: Option<bool>,
+    #[serde(rename = "count-opening")]
+    count_opening: Option<bool>,
     #[serde(rename = "banned-negation")]
     banned_negation: Option<bool>,
     #[serde(rename = "negation-pair")]
@@ -121,12 +139,18 @@ impl Default for Config {
         Config {
             patterns: PatternConfig {
                 em_dash: true,
+                en_dash: true,
                 double_hyphen: true,
+                middle_dot: true,
                 contrastive: true,
                 demonstrative_is: true,
                 filler_adverbs: true,
                 weasel_connectives: true,
                 banned_flourish: true,
+                ai_vocabulary: true,
+                rhetorical_question_chain: true,
+                vague_attribution: true,
+                count_opening: true,
                 banned_negation: true,
                 negation_pair: true,
                 symmetric_negation: true,
@@ -189,8 +213,14 @@ impl Config {
             if let Some(v) = p.em_dash {
                 self.patterns.em_dash = v;
             }
+            if let Some(v) = p.en_dash {
+                self.patterns.en_dash = v;
+            }
             if let Some(v) = p.double_hyphen {
                 self.patterns.double_hyphen = v;
+            }
+            if let Some(v) = p.middle_dot {
+                self.patterns.middle_dot = v;
             }
             if let Some(v) = p.contrastive {
                 self.patterns.contrastive = v;
@@ -206,6 +236,18 @@ impl Config {
             }
             if let Some(v) = p.banned_flourish {
                 self.patterns.banned_flourish = v;
+            }
+            if let Some(v) = p.ai_vocabulary {
+                self.patterns.ai_vocabulary = v;
+            }
+            if let Some(v) = p.rhetorical_question_chain {
+                self.patterns.rhetorical_question_chain = v;
+            }
+            if let Some(v) = p.vague_attribution {
+                self.patterns.vague_attribution = v;
+            }
+            if let Some(v) = p.count_opening {
+                self.patterns.count_opening = v;
             }
             if let Some(v) = p.banned_negation {
                 self.patterns.banned_negation = v;
