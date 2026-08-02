@@ -364,7 +364,7 @@ fn detect_rhetorical_question_chain(contents: &str) -> Vec<Match> {
 
 pub const RHETORICAL_QUESTION_CHAIN: Pattern = Pattern {
     name: "rhetorical-question-chain",
-    fix: "replace consecutive rhetorical questions with a direct statement of the problem",
+    fix: "replace consecutive questions with a direct statement or keep only the necessary question",
     detect: detect_rhetorical_question_chain,
 };
 
