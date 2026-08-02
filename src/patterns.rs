@@ -130,6 +130,28 @@ pub const EM_DASH: Pattern = Pattern {
     detect: detect_em_dash,
 };
 
+// ---- En-dash ----
+
+fn detect_en_dash(contents: &str) -> Vec<Match> {
+    let mut matches = Vec::new();
+    for (line_idx, line) in contents.lines().enumerate() {
+        for (byte_offset, _) in line.match_indices('\u{2013}') {
+            let column = line[..byte_offset].chars().count() + 1;
+            matches.push(Match {
+                line_number: line_idx + 1,
+                column,
+            });
+        }
+    }
+    matches
+}
+
+pub const EN_DASH: Pattern = Pattern {
+    name: "en-dash",
+    fix: "rewrite without en-dash (\u{2013}); write ranges with \"to\" and use plain punctuation elsewhere",
+    detect: detect_en_dash,
+};
+
 // ---- Double-hyphen (em-dash substitute) ----
 
 fn detect_double_hyphen(contents: &str) -> Vec<Match> {
@@ -284,6 +306,117 @@ pub const BANNED_FLOURISH: Pattern = Pattern {
     name: "banned-flourish",
     fix: "delete the flourish phrase (\"worth noting\", \"to be clear\", \"at the end of the day\", etc.); the sentence is stronger without it",
     detect: detect_banned_flourish,
+};
+
+// ---- Stock AI vocabulary ----
+
+fn detect_ai_vocabulary(contents: &str) -> Vec<Match> {
+    let re = regex_lite::Regex::new(
+        r"(?i)\b(delve|crucial|pivotal|intricate|tapestry|underscore|testament|foster|vibrant|showcase|garner|seamless|robust|leverage|unlock|empower|elevate|transform|revolutionize|synergy|game-changer|landscape|reach for)\b"
+    ).unwrap();
+    let mut matches = Vec::new();
+    for (line_idx, line) in contents.lines().enumerate() {
+        for m in re.find_iter(line) {
+            let column = line[..m.start()].chars().count() + 1;
+            matches.push(Match {
+                line_number: line_idx + 1,
+                column,
+            });
+        }
+    }
+    matches
+}
+
+pub const AI_VOCABULARY: Pattern = Pattern {
+    name: "ai-vocabulary",
+    fix: "replace stock AI vocabulary with an ordinary word or the specific fact",
+    detect: detect_ai_vocabulary,
+};
+
+// ---- Consecutive rhetorical questions ----
+
+fn detect_rhetorical_question_chain(contents: &str) -> Vec<Match> {
+    let starts = line_starts(contents);
+    let mut matches = Vec::new();
+    for p in paragraphs(contents) {
+        let mut first_question: Option<usize> = None;
+        let mut run_len = 0usize;
+        for s in sentences(p.text) {
+            if s.text.trim_end().ends_with('?') {
+                first_question.get_or_insert(s.start);
+                run_len += 1;
+                if run_len == 2 {
+                    let (line, col) =
+                        byte_to_line_col(contents, &starts, p.start + first_question.unwrap());
+                    matches.push(Match {
+                        line_number: line,
+                        column: col,
+                    });
+                }
+            } else {
+                first_question = None;
+                run_len = 0;
+            }
+        }
+    }
+    matches
+}
+
+pub const RHETORICAL_QUESTION_CHAIN: Pattern = Pattern {
+    name: "rhetorical-question-chain",
+    fix: "replace consecutive questions with a direct statement or keep only the necessary question",
+    detect: detect_rhetorical_question_chain,
+};
+
+// ---- Vague attribution ----
+
+fn detect_vague_attribution(contents: &str) -> Vec<Match> {
+    let re = regex_lite::Regex::new(
+        r"(?i)\b(experts (?:say|argue|believe)|studies show|research shows|observers (?:say|argue|have cited)|many (?:say|argue|believe)|it is widely believed)\b"
+    ).unwrap();
+    let mut matches = Vec::new();
+    for (line_idx, line) in contents.lines().enumerate() {
+        for m in re.find_iter(line) {
+            let column = line[..m.start()].chars().count() + 1;
+            matches.push(Match {
+                line_number: line_idx + 1,
+                column,
+            });
+        }
+    }
+    matches
+}
+
+pub const VAGUE_ATTRIBUTION: Pattern = Pattern {
+    name: "vague-attribution",
+    fix: "name the source and evidence behind the claim, or cut the attribution",
+    detect: detect_vague_attribution,
+};
+
+// ---- Count-opening ----
+
+fn detect_count_opening(contents: &str) -> Vec<Match> {
+    let starts = line_starts(contents);
+    let re = regex_lite::Regex::new(
+        r"(?i)^\s*(?:there (?:are|is)\s+)?(?:a few|two|three|four|five|six|seven|eight|nine|ten)\s+(?:things|reasons|points|notes|cautions|ways|steps|takeaways|considerations)\b"
+    ).unwrap();
+    let mut matches = Vec::new();
+    for s in sentences(contents) {
+        if let Some(m) = re.find(s.text) {
+            let (line, col) = byte_to_line_col(contents, &starts, s.start + m.start());
+            matches.push(Match {
+                line_number: line,
+                column: col,
+            });
+        }
+    }
+    matches
+}
+
+pub const COUNT_OPENING: Pattern = Pattern {
+    name: "count-opening",
+    fix: "state the first point directly; use a list when the count helps the reader",
+    detect: detect_count_opening,
 };
 
 // ---- Banned negation ("not" / "n't") ----
@@ -553,6 +686,9 @@ pub fn active_patterns(config: &Config) -> Vec<&'static Pattern> {
     if config.patterns.em_dash {
         out.push(&EM_DASH);
     }
+    if config.patterns.en_dash {
+        out.push(&EN_DASH);
+    }
     if config.patterns.double_hyphen {
         out.push(&DOUBLE_HYPHEN);
     }
@@ -570,6 +706,18 @@ pub fn active_patterns(config: &Config) -> Vec<&'static Pattern> {
     }
     if config.patterns.banned_flourish {
         out.push(&BANNED_FLOURISH);
+    }
+    if config.patterns.ai_vocabulary {
+        out.push(&AI_VOCABULARY);
+    }
+    if config.patterns.rhetorical_question_chain {
+        out.push(&RHETORICAL_QUESTION_CHAIN);
+    }
+    if config.patterns.vague_attribution {
+        out.push(&VAGUE_ATTRIBUTION);
+    }
+    if config.patterns.count_opening {
+        out.push(&COUNT_OPENING);
     }
     if config.patterns.banned_negation {
         out.push(&BANNED_NEGATION);
@@ -599,4 +747,52 @@ pub fn active_patterns(config: &Config) -> Vec<&'static Pattern> {
         out.push(&THREE_BEAT);
     }
     out
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn detects_plain_punctuation_substitutes() {
+        assert_eq!(detect_en_dash("pages 10\u{2013}20").len(), 1);
+        assert_eq!(detect_en_dash("pages 10-20").len(), 0);
+    }
+
+    #[test]
+    fn detects_stock_ai_vocabulary() {
+        assert_eq!(detect_ai_vocabulary("Unlock a robust workflow.").len(), 2);
+        assert_eq!(detect_ai_vocabulary("Use a faster workflow.").len(), 0);
+    }
+
+    #[test]
+    fn detects_consecutive_questions_only() {
+        assert_eq!(
+            detect_rhetorical_question_chain("Does it work? Does it scale?").len(),
+            1
+        );
+        assert_eq!(
+            detect_rhetorical_question_chain("Does it work? The benchmark answers that.").len(),
+            0
+        );
+    }
+
+    #[test]
+    fn detects_vague_attribution() {
+        assert_eq!(detect_vague_attribution("Experts say it scales.").len(), 1);
+        assert_eq!(
+            detect_vague_attribution("The 2025 benchmark found that it scales.").len(),
+            0
+        );
+    }
+
+    #[test]
+    fn detects_count_openings() {
+        assert_eq!(detect_count_opening("Three things matter.").len(), 1);
+        assert_eq!(
+            detect_count_opening("There are two reasons to wait.").len(),
+            1
+        );
+        assert_eq!(detect_count_opening("The first result matters.").len(), 0);
+    }
 }
